@@ -1,0 +1,14 @@
+flask
+flask-cors
+whisper
+numpy
+soundfile
+aiohttp
+asyncio
+requests
+PyPDF2
+python-docx
+openpyxl
+pathlib
+sentence-transformers
+torch

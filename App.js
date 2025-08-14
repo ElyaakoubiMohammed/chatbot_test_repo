@@ -509,43 +509,55 @@ function App() {
   }
 
   const formatMessageWithCodeBlocks = (content) => {
-    if (!content) return content
+    if (!content || typeof content !== "string" || content.trim() === "") {
+      return content || ""
+    }
 
-    const parts = content.split(/(```[\s\S]*?```|`[^`\n]+`)/g)
+    try {
+      const parts = content.split(/(```[\s\S]*?```|`[^`\n]+`)/g)
 
-    return parts.map((part, index) => {
-      if (part.startsWith("```") && part.endsWith("```")) {
-        const codeContent = part.slice(3, -3)
-        const lines = codeContent.split("\n")
-        const language = lines[0].trim()
-        const code = lines.slice(1).join("\n")
+      return parts.map((part, index) => {
+        if (part.startsWith("```") && part.endsWith("```")) {
+          const codeContent = part.slice(3, -3)
+          const lines = codeContent.split("\n")
+          const language = lines[0].trim()
+          const code = lines.slice(1).join("\n")
 
-        return (
-          <div key={index} className="code-block">
-            {language && <div className="code-language">{language}</div>}
-            <pre>
-              <code>{code}</code>
-            </pre>
-            <button className="copy-code-btn" onClick={() => copyToClipboard(code)} title="Copy code">
-              📋
-            </button>
-          </div>
-        )
-      } else if (part.startsWith("`") && part.endsWith("`")) {
-        return (
-          <code key={index} className="inline-code">
-            {part.slice(1, -1)}
-          </code>
-        )
-      } else {
-        return part.split("\n").map((line, lineIndex, array) => (
-          <span key={`${index}-${lineIndex}`}>
-            {line}
-            {lineIndex < array.length - 1 && <br />}
-          </span>
-        ))
-      }
-    })
+          return (
+            <div key={index} className="code-block">
+              {language && <div className="code-language">{language}</div>}
+              <pre>
+                <code>{code}</code>
+              </pre>
+              <button className="copy-code-btn" onClick={() => copyToClipboard(code)} title="Copy code">
+                📋
+              </button>
+            </div>
+          )
+        } else if (part.startsWith("`") && part.endsWith("`")) {
+          return (
+            <code key={index} className="inline-code">
+              {part.slice(1, -1)}
+            </code>
+          )
+        } else {
+          return part.split("\n").map((line, lineIndex, array) => (
+            <span key={`${index}-${lineIndex}`}>
+              {line}
+              {lineIndex < array.length - 1 && <br />}
+            </span>
+          ))
+        }
+      })
+    } catch (error) {
+      console.error("Error formatting message with code blocks:", error)
+      return content.split("\n").map((line, index, array) => (
+        <span key={index}>
+          {line}
+          {index < array.length - 1 && <br />}
+        </span>
+      ))
+    }
   }
 
   const handleLoginSuccess = (userData) => {
