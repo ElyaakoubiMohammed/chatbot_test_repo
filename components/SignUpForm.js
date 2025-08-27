@@ -12,8 +12,8 @@ export default function SignUpForm({ onSignUpSuccess }) {
   const [success, setSuccess] = useState("")
 
   const VALID_USERS = {
-    "demo@demo.com": "demo123",
-    "elyaakoubimohammed@gmail.com": "employee456"
+    "chafiaaabida@gmail.com": "abida123",
+    "elyaakoubimohammed@gmail.com": "mohammed123"
   }
 
   const handleSignUp = async (e) => {
@@ -31,8 +31,8 @@ export default function SignUpForm({ onSignUpSuccess }) {
         return
       }
 
-      if (!email.endsWith("@company.com") && email !== "demo@demo.com") {
-        setError("Registration limited to company emails (except demo@demo.com)")
+      if (!email.endsWith("@company.com") && email !== "chafiaaabida@gmail.com") {
+        setError("Registration limited to company emails (except chafiaaabida@gmail.com)")
         return
       }
 
@@ -42,7 +42,7 @@ export default function SignUpForm({ onSignUpSuccess }) {
       }
 
       if (!VALID_USERS[email]) {
-        setError("Unauthorized email. Only demo@demo.com and elyaakoubimohammed@gmail.com are allowed.")
+        setError("Unauthorized email. Only chafiaaabida@gmail.com and elyaakoubimohammed@gmail.com are allowed.")
         return
       }
 
@@ -51,7 +51,7 @@ export default function SignUpForm({ onSignUpSuccess }) {
 
       // Mock user object
       const mockUser = {
-        id: email === "demo@demo.com" ? "user1" : "user2",
+        id: email === "chafiaaabida@gmail.com" ? "user1" : "user2",
         email,
         user_metadata: { full_name: fullName },
         confirmed_at: new Date().toISOString()

@@ -14,8 +14,8 @@ export default function LoginForm({ onLoginSuccess }) {
   const [error, setError] = useState("")
 
   const VALID_USERS = {
-    "demo@demo.com": "demo123",
-    "elyaakoubimohammed@gmail.com": "employee456"
+    "chafiaaabida@gmail.com": "abida123",
+    "elyaakoubimohammed@gmail.com": "mohammed123"
   }
 
   const handleLogin = async (e) => {
@@ -35,7 +35,7 @@ export default function LoginForm({ onLoginSuccess }) {
       if (VALID_USERS[email] && VALID_USERS[email] === password) {
         // Mock user object
         const mockUser = {
-          id: email === "demo@demo.com" ? "user1" : "user2",
+          id: email === "chafiaaabida@gmail.com" ? "user1" : "user2",
           email,
           app_metadata: { provider: "email" },
           user_metadata: {},

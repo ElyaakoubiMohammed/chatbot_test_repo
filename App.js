@@ -84,7 +84,7 @@ function App() {
 
 
   const getBotReply = (userEmail, userMessage) => {
-    if (userEmail === "demo@demo.com") {
+    if (userEmail === "chafiaaabida@gmail.com") {
       const match = SCRIPT_USER1.find(item => item.user.trim().toLowerCase() === userMessage.trim().toLowerCase())
       return match ? match.bot : "Je ne comprends pas votre question. Veuillez consulter les exemples de dialogue."
     }
@@ -229,7 +229,7 @@ function App() {
 
         // Set title after bot's 2nd reply (4th message total)
         if (messageCount === 3) {
-          if (user.email === "demo@demo.com") {
+          if (user.email === "chafiaaabida@gmail.com") {
             newTitle = "LPEE Béton & Matériaux"
           } else if (user.email === "elyaakoubimohammed@gmail.com") {
             newTitle = "Performance Environnement"
@@ -441,7 +441,7 @@ function App() {
           <div className="user-info">
             <div className="user-avatar">{user.email.charAt(0).toUpperCase()}</div>
             <div className="user-details">
-              <div className="user-email">{user.email === "demo@demo.com" ? "Chafia" : "Elyaakoubi"}</div>
+              <div className="user-email">{user.email === "chafiaaabida@gmail.com" ? "Chafia" : "Elyaakoubi"}</div>
               <button onClick={handleLogout} className="logout-btn">Sign Out</button>
             </div>
           </div>

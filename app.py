@@ -9,8 +9,8 @@ import shutil
 
 # ========== HARD CODED USERS ==========
 VALID_USERS = {
-    "demo@demo.com": "demo123",
-    "elyaakoubimohammed@gmail.com": "employee456"
+    "chafiaaabida@gmail.com": "abida123",
+    "elyaakoubimohammed@gmail.com": "mohammed123"
 }
 
 # ========== FLASK SETUP ==========
@@ -95,7 +95,7 @@ SCRIPT_USER2 = [
 
 def get_bot_reply(user_email, user_message):
     """Return hardcoded bot reply based on user and message"""
-    if user_email == "demo@demo.com":
+    if user_email == "chafiaaabida@gmail.com":
         for item in SCRIPT_USER1:
             if item["user"].strip().lower() == user_message.strip().lower():
                 return item["bot"]
@@ -229,7 +229,7 @@ def chat():
     # Update title after first reply
     # Set hardcoded script-based title
     if len(convos[conversation_id]["messages"]) == 2:
-        if user_email == "demo@demo.com":
+        if user_email == "chafiaaabida@gmail.com":
             convos[conversation_id]["title"] = "Script 1: LPEE Béton & Matériaux"
         elif user_email == "elyaakoubimohammed@gmail.com":
             convos[conversation_id]["title"] = "Script 2: Performance Environnement"
