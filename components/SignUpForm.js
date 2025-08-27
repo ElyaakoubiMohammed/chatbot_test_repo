@@ -1,7 +1,7 @@
+
 "use client"
 
 import { useState } from "react"
-import { supabase } from "../lib/supabase/client.js"
 
 export default function SignUpForm({ onSignUpSuccess }) {
   const [email, setEmail] = useState("")
@@ -11,6 +11,11 @@ export default function SignUpForm({ onSignUpSuccess }) {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
+  const VALID_USERS = {
+    "demo@demo.com": "demo123",
+    "elyaakoubimohammed@gmail.com": "employee456"
+  }
+
   const handleSignUp = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -18,32 +23,52 @@ export default function SignUpForm({ onSignUpSuccess }) {
     setSuccess("")
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || window.location.origin,
-          data: {
-            full_name: fullName,
-          },
-        },
-      })
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 800))
 
-      if (error) {
-        setError(error.message)
-      } else {
-        setSuccess("Check your email to confirm your account!")
-        // Create profile
-        if (data.user) {
-          await supabase.from("profiles").insert([
-            {
-              id: data.user.id,
-              email: data.user.email,
-              full_name: fullName,
-            },
-          ])
-        }
+      if (!email || !password || !fullName) {
+        setError("All fields are required")
+        return
       }
+
+      if (!email.endsWith("@company.com") && email !== "demo@demo.com") {
+        setError("Registration limited to company emails (except demo@demo.com)")
+        return
+      }
+
+      if (VALID_USERS[email] && VALID_USERS[email] !== password) {
+        setError("Invalid password for this account")
+        return
+      }
+
+      if (!VALID_USERS[email]) {
+        setError("Unauthorized email. Only demo@demo.com and elyaakoubimohammed@gmail.com are allowed.")
+        return
+      }
+
+      // Mock successful sign-up
+      setSuccess("Account ready! Please sign in.")
+
+      // Mock user object
+      const mockUser = {
+        id: email === "demo@demo.com" ? "user1" : "user2",
+        email,
+        user_metadata: { full_name: fullName },
+        confirmed_at: new Date().toISOString()
+      }
+
+      // Call success callback
+      if (onSignUpSuccess) {
+        onSignUpSuccess(mockUser)
+      }
+
+      // Store in localStorage to indicate account exists
+      const existingAccounts = JSON.parse(localStorage.getItem('registered_accounts') || '[]')
+      if (!existingAccounts.includes(email)) {
+        existingAccounts.push(email)
+        localStorage.setItem('registered_accounts', JSON.stringify(existingAccounts))
+      }
+
     } catch (err) {
       setError("An unexpected error occurred")
     } finally {
@@ -99,7 +124,11 @@ export default function SignUpForm({ onSignUpSuccess }) {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="auth-button">
+          <button
+            type="submit"
+            disabled={loading}
+            className="auth-button w-full bg-[#2b725e] hover:bg-[#235e4c] text-white py-6 text-lg font-medium rounded-lg h-[60px] disabled:opacity-70"
+          >
             {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>

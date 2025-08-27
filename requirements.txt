@@ -12,3 +12,5 @@ openpyxl
 pathlib
 sentence-transformers
 torch
+supabase
+python-dotenv

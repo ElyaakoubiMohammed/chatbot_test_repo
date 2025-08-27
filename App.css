@@ -15,6 +15,8 @@ body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+
 }
 
 /* Complete layout redesign - no more empty space issues */
@@ -32,14 +34,22 @@ body {
   animation: backgroundPulse 15s ease-in-out infinite;
 }
 
+/* Auth layout - center forms when no user */
+.app-layout:has(.auth-wrapper) {
+  grid-template-columns: 1fr;
+}
+
 @keyframes backgroundPulse {
+
   0%,
   100% {
     filter: brightness(1) saturate(1);
   }
+
   33% {
     filter: brightness(1.1) saturate(1.2);
   }
+
   66% {
     filter: brightness(0.9) saturate(0.8);
   }
@@ -52,20 +62,16 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: repeating-linear-gradient(
-      90deg,
+  background: repeating-linear-gradient(90deg,
       transparent,
       transparent 100px,
       rgba(255, 255, 255, 0.01) 101px,
-      rgba(255, 255, 255, 0.01) 102px
-    ),
-    repeating-linear-gradient(
-      0deg,
+      rgba(255, 255, 255, 0.01) 102px),
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 100px,
       rgba(255, 255, 255, 0.01) 101px,
-      rgba(255, 255, 255, 0.01) 102px
-    );
+      rgba(255, 255, 255, 0.01) 102px);
   pointer-events: none;
   z-index: 1;
   animation: gridMove 20s linear infinite;
@@ -75,6 +81,7 @@ body {
   0% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(100px, 100px);
   }
@@ -94,11 +101,13 @@ body {
 }
 
 @keyframes breathe {
+
   0%,
   100% {
     opacity: 0.3;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.05);
@@ -136,10 +145,12 @@ body {
 }
 
 @keyframes sidebarShimmer {
+
   0%,
   100% {
     transform: translateX(-100%) rotate(45deg);
   }
+
   50% {
     transform: translateX(100%) rotate(45deg);
   }
@@ -150,7 +161,7 @@ body {
   min-width: 80px;
 }
 
-.sidebar.closed .sidebar-content > *:not(.toggle-btn) {
+.sidebar.closed .sidebar-content>*:not(.toggle-btn) {
   opacity: 0;
   transform: translateX(-20px);
 }
@@ -221,11 +232,13 @@ body {
 }
 
 @keyframes titleGlow {
+
   0%,
   100% {
     filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.3));
     transform: scale(1);
   }
+
   50% {
     filter: drop-shadow(0 0 20px rgba(255, 20, 147, 0.4));
     transform: scale(1.02);
@@ -314,6 +327,7 @@ body {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -502,20 +516,16 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-      45deg,
+  background: linear-gradient(45deg,
       transparent 48%,
       rgba(255, 255, 255, 0.01) 49%,
       rgba(255, 255, 255, 0.01) 51%,
-      transparent 52%
-    ),
-    linear-gradient(
-      -45deg,
+      transparent 52%),
+    linear-gradient(-45deg,
       transparent 48%,
       rgba(255, 255, 255, 0.01) 49%,
       rgba(255, 255, 255, 0.01) 51%,
-      transparent 52%
-    );
+      transparent 52%);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: -1;
@@ -526,6 +536,7 @@ body {
   0% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(60px, 60px);
   }
@@ -553,10 +564,12 @@ body {
 }
 
 @keyframes headerPulse {
+
   0%,
   100% {
     filter: drop-shadow(0 2px 4px rgba(255, 140, 0, 0.3));
   }
+
   50% {
     filter: drop-shadow(0 4px 8px rgba(255, 20, 147, 0.4));
   }
@@ -610,6 +623,7 @@ body {
     opacity: 0;
     transform: translateY(20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -671,8 +685,8 @@ body {
 /* Fixed message actions positioning to not cover text and improved design */
 .message-actions {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: 8px;
+  right: 8px;
   display: flex;
   gap: 6px;
   opacity: 0;
@@ -681,7 +695,7 @@ body {
 }
 
 .message.assistant .message-actions {
-  left: -12px;
+  left: 8px;
   right: auto;
 }
 
@@ -728,10 +742,9 @@ body {
   background: linear-gradient(135deg, rgba(255, 140, 0, 0.12) 0%, rgba(255, 20, 147, 0.08) 100%);
   border: 2px solid rgba(255, 140, 0, 0.4);
   box-shadow: 0 12px 40px rgba(255, 140, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transform: scale(1.02);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
+
 }
 
 .message.editing::before {
@@ -742,13 +755,19 @@ body {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.1), transparent);
-  animation: editShimmer 2s infinite;
+
+}
+
+html,
+body {
+  overflow-x: hidden;
 }
 
 @keyframes editShimmer {
   0% {
     left: -100%;
   }
+
   100% {
     left: 100%;
   }
@@ -756,7 +775,8 @@ body {
 
 .message.editing textarea {
   width: 100%;
-  min-height: 100px;
+  box-sizing: border-box;
+  max-width: 100%;
   padding: 20px 24px;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 0, 40, 0.4) 100%);
   backdrop-filter: blur(20px) saturate(180%);
@@ -764,16 +784,24 @@ body {
   border-radius: 16px;
   color: #ffffff;
   font-family: "Geist", sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.6;
   resize: vertical;
   outline: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   margin-bottom: 20px;
+  overflow-x: hidden;
+  word-wrap: break-word;
   /* Hide scrollbar for all browsers */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
+
 }
 
 /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
@@ -799,6 +827,8 @@ body {
   align-items: center;
   justify-content: flex-start;
   margin-top: 8px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .save-edit-btn {
@@ -894,6 +924,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -989,20 +1020,34 @@ body {
   align-items: center;
   gap: 8px;
   margin: 24px 0;
-  animation: thinkingPulse 2s ease-in-out infinite;
 }
 
 @keyframes thinkingPulse {
+
   0%,
   100% {
     opacity: 0.7;
   }
+
   50% {
     opacity: 1;
   }
 }
 
+.thinking-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  /* This centers the dots vertically */
+}
+
 .thinking-indicator span {
+  font-size: 25px;
+  color: #ff8c00;
+  animation: thinkingBounce 1.4s ease-in-out infinite;
+}
+
+.thinking-indicator .dot {
   width: 12px;
   height: 12px;
   background: linear-gradient(135deg, #ff8c00, #ff1493);
@@ -1013,23 +1058,32 @@ body {
 .thinking-indicator span:nth-child(1) {
   animation-delay: 0s;
 }
+
 .thinking-indicator span:nth-child(2) {
   animation-delay: 0.2s;
 }
+
 .thinking-indicator span:nth-child(3) {
   animation-delay: 0.4s;
 }
 
+.thinking-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
 @keyframes thinkingBounce {
+
   0%,
-  80%,
+  60%,
   100% {
-    transform: scale(0.8);
-    opacity: 0.5;
+    transform: translateY(0);
   }
-  40% {
-    transform: scale(1.2);
-    opacity: 1;
+
+  30% {
+    transform: translateY(-15px);
   }
 }
 
@@ -1161,13 +1215,11 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    transparent 100px,
-    rgba(255, 255, 255, 0.01) 101px,
-    rgba(255, 255, 255, 0.01) 102px
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      transparent 100px,
+      rgba(255, 255, 255, 0.01) 101px,
+      rgba(255, 255, 255, 0.01) 102px);
   transition: left 0.5s;
 }
 
@@ -1193,10 +1245,12 @@ body {
 }
 
 @keyframes recordingPulse {
+
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
   }
+
   50% {
     box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
   }
@@ -1270,6 +1324,7 @@ textarea:focus-visible {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1401,6 +1456,9 @@ textarea:focus-visible {
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
+  position: relative;
+  z-index: 2;
+  /* Higher z-index puts it on top */
 }
 
 .auth-container {
@@ -1552,6 +1610,7 @@ textarea:focus-visible {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

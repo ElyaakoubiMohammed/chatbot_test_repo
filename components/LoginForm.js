@@ -1,7 +1,7 @@
+
 "use client"
 
 import { useState } from "react"
-import { supabase } from "../lib/supabase/client.js"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -13,22 +13,46 @@ export default function LoginForm({ onLoginSuccess }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
+  const VALID_USERS = {
+    "demo@demo.com": "demo123",
+    "elyaakoubimohammed@gmail.com": "employee456"
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 800))
 
-      if (error) {
-        setError(error.message)
-      } else {
-        onLoginSuccess(data.user)
+      if (!email || !password) {
+        setError("Email and password are required")
+        return
+      }
+
+      if (VALID_USERS[email] && VALID_USERS[email] === password) {
+        // Mock user object
+        const mockUser = {
+          id: email === "demo@demo.com" ? "user1" : "user2",
+          email,
+          app_metadata: { provider: "email" },
+          user_metadata: {},
+          confirmed_at: new Date().toISOString(),
+          role: "authenticated"
+        }
+
+        // Call success callback
+        onLoginSuccess(mockUser)
+
+        // Set fake session in localStorage
+        localStorage.setItem("user", JSON.stringify({ email }))
+
+        // Redirect
         router.push("/")
+      } else {
+        setError("Invalid email or password")
       }
     } catch (err) {
       setError("An unexpected error occurred")
@@ -74,7 +98,7 @@ export default function LoginForm({ onLoginSuccess }) {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2b725e] hover:bg-[#235e4c] text-white py-6 text-lg font-medium rounded-lg h-[60px]"
+            className="auth-button w-full bg-[#2b725e] hover:bg-[#235e4c] text-white py-6 text-lg font-medium rounded-lg h-[60px] disabled:opacity-70"
           >
             {loading ? (
               <>
@@ -86,6 +110,7 @@ export default function LoginForm({ onLoginSuccess }) {
             )}
           </Button>
         </form>
+        <br />
       </div>
     </div>
   )

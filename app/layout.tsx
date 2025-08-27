@@ -4,10 +4,12 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
+  title: 'LPEE Chatbot',
   description: 'Created with v0',
   generator: 'v0.app',
+  icons: 'https://example.com/favicon.ico'
 }
+
 
 export default function RootLayout({
   children,

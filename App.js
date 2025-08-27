@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import axios from "axios"
-import { supabase } from "./lib/supabase/client.js"
 import LoginForm from "./components/LoginForm.js"
 import SignUpForm from "./components/SignUpForm.js"
 import "./App.css"
@@ -59,133 +57,109 @@ function App() {
   const textareaRef = useRef(null)
   const messageAreaRef = useRef(null)
 
-  useEffect(() => {
-    checkUser()
+  // Hardcoded scripts
+  const SCRIPT_USER1 = [
+    { user: "Salut, comment ça va ?", bot: "Je suis un assistant IA, donc je ne ressens pas d'émotions comme un humain, mais je fonctionne parfaitement et je suis prêt à vous aider pour tout ce dont vous avez besoin. Si je pouvais ressentir quelque chose, je dirais que je suis curieux et impatient de voir nos échanges. Et vous, comment allez-vous ?" },
+    {
+      user: "Hi!",
+      bot: "Hello! I’m an AI assistant for LPEE, ready to help with any questions or provide information about our activities."
+    },
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user)
-        await fetchConversationsFromSupabase(session.user.id)
-      } else if (event === "SIGNED_OUT") {
-        setUser(null)
-        setConversations({})
-        setCurrentConversation(null)
-      }
-    })
+    { user: "Ça va, merci. Est-ce que tu peux me dire un truc intéressant qui n'a rien à voir avec le travail ?", bot: "Bien sûr ! Saviez-vous que le béton utilisé aujourd'hui peut être conçu pour absorber le dioxyde de carbone de l'air et réduire l'empreinte carbone des bâtiments ? C'est un exemple d'innovation durable dans la construction." },
+    { user: "Ah oui, c'est impressionnant. Et sinon, peux-tu me donner un aperçu des activités récentes du LPEE dans le béton et matériaux ?", bot: "Bien sûr. Depuis janvier 2025, le LPEE a analysé et validé plus de 1 000 échantillons de béton sur différents chantiers au Maroc. Les contrôles portaient sur la résistance mécanique, la durabilité et la conformité aux normes NM 10.1.004 et NM 10.2.008. On observe également une hausse des demandes liées aux matériaux recyclés et aux solutions de construction durable." },
+    { user: "Quels sont les projets les plus suivis récemment ?", bot: "Les principaux projets sont :\n\nTramway Casablanca, Extension Ligne 2\n\nAutoroute Casablanca-Rabat, Lot 3\n\nPort Tanger Med, Zone logistique\nPour chacun, le LPEE a effectué des essais de matériaux et suivi la qualité sur site, en émettant des recommandations détaillées pour garantir la conformité." },
+    { user: "Can you tell me about the geotechnical studies conducted this year?", bot: "Yes. In 2025, LPEE performed over 3,000 soil and foundation studies for various infrastructure projects. Common issues detected were low soil compaction in coastal regions and clay layers requiring stabilization. For each case, engineers provided specific recommendations to ensure safe construction and structural stability." },
+    { user: "Et au niveau des laboratoires, quels tests sont les plus fréquents ?", bot: "Les tests les plus demandés sont :\n\nRésistance à la compression du béton\n\nAnalyses granulométriques des matériaux\n\nEssais de durabilité et vieillissement\n\nContrôle de qualité des enrobés bitumineux\nCes quatre catégories représentent environ 75 % des demandes globales." },
+    { user: "Tiens, petite question : est-ce que les IA comme toi peuvent apprendre de nouvelles choses par elles-mêmes ?", bot: "Je peux traiter et analyser les données qui me sont fournies, mais je n'apprends pas de façon autonome comme un humain. Je fonctionne en utilisant les informations et les modèles qui m'ont été programmés." }
+  ]
 
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const checkUser = async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session) {
-        setUser(session.user)
-        await fetchConversationsFromSupabase(session.user.id)
-      }
-    } catch (error) {
-      console.error("Error checking user:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchConversationsFromSupabase = async (userId) => {
-    try {
-      const { data: conversations, error } = await supabase
-        .from("conversations")
-        .select(`
-          id,
-          title,
-          created_at,
-          messages (
-            id,
-            content,
-            sender,
-            image_url,
-            created_at
-          )
-        `)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-
-      if (error) throw error
-
-      const parsed = {}
-      conversations.forEach((convo) => {
-        parsed[convo.id] = {
-          title: convo.title || "New conversation",
-          messages: convo.messages
-            .map((msg) => ({
-              role: msg.sender,
-              content: msg.content,
-              ...(msg.image_url && { image: msg.image_url }),
-            }))
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
-        }
-      })
-
-      setConversations(parsed)
-
-      const savedConversation = localStorage.getItem("currentConversation")
-      if (savedConversation && parsed[savedConversation]) {
-        setCurrentConversation(savedConversation)
-      } else if (Object.keys(parsed).length > 0 && !currentConversation) {
-        setCurrentConversation(Object.keys(parsed)[0])
-      }
-    } catch (error) {
-      console.error("Error fetching conversations:", error)
-    }
-  }
-
-  const fetchConversations = () => {
-    if (!user) return
-    fetchConversationsFromSupabase(user.id)
-  }
-
-  useEffect(() => {
-    if (user) {
-      fetchConversations()
-    }
-  }, [user])
-
-  useEffect(() => {
-    if (currentConversation) {
-      localStorage.setItem("currentConversation", currentConversation)
-    }
-  }, [currentConversation])
-
-  useEffect(() => {
-    const adjustHeight = () => {
-      const textarea = textareaRef.current
-      textarea.style.height = "auto"
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-    adjustHeight()
-  }, [message])
-
-  useEffect(() => {
-    if (messageAreaRef.current && currentConversation && conversations[currentConversation]?.messages?.length > 0) {
-      const messageArea = messageAreaRef.current
-      messageArea.scrollTop = messageArea.scrollHeight
-    }
-  }, [conversations, currentConversation, thinking])
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setSelectedImage(file)
-    alert("Image selected. Click Send to send it. Click the image button again to change it.")
-  }
+  const SCRIPT_USER2 = [
+    { user: "Peux-tu me donner un aperçu rapide des anomalies ou non-conformités récentes ?", bot: "Oui, environ 4 % des échantillons ont présenté des écarts : certains bétons légèrement en dessous de la résistance attendue et quelques granulats non conformes aux spécifications. Pour chaque cas, le LPEE a fourni des recommandations détaillées pour corriger les anomalies." },
+    { user: "Que penses-tu de la performance du secteur environnement ?", bot: "Le secteur environnement affiche une performance remarquable avec une croissance de +15.3%, la plus élevée de tous les secteurs d'activité du LPEE. Cette forte progression s'explique probablement par plusieurs facteurs :\nPremièrement, le renforcement du cadre réglementaire environnemental au Maroc pousse les entreprises et collectivités à multiplier les études d'impact et contrôles de conformité.\nDeuxièmement, la sensibilisation croissante aux enjeux écologiques génère une demande accrue d'analyses de qualité de l'air, de l'eau et des sols.\nAvec 552 analyses réalisées (17% du volume total) et un délai moyen de 10.8 jours, ce secteur trouve un équilibre intéressant entre volume d'activité et efficacité opérationnelle. Le délai reste raisonnable comparé à la géotechnique (14.5 jours) ou aux structures (18.3 jours), tout en étant plus long que les matériaux de construction (7.2 jours), ce qui reflète la complexité technique des analyses environnementales.\nCette dynamique positionne l'environnement comme un secteur d'avenir pour le LPEE, avec un potentiel de croissance soutenu dans les années à venir, notamment avec les grands projets d'infrastructure verte du royaume." }
+  ]
 
   const clearSelectedImage = () => {
-    setSelectedImage(null)
-    const fileInput = document.getElementById("image-upload")
-    if (fileInput) fileInput.value = ""
+    setSelectedImage(null);
+  };
+
+
+  const getBotReply = (userEmail, userMessage) => {
+    if (userEmail === "demo@demo.com") {
+      const match = SCRIPT_USER1.find(item => item.user.trim().toLowerCase() === userMessage.trim().toLowerCase())
+      return match ? match.bot : "Je ne comprends pas votre question. Veuillez consulter les exemples de dialogue."
+    }
+    if (userEmail === "elyaakoubimohammed@gmail.com") {
+      const match = SCRIPT_USER2.find(item => item.user.trim().toLowerCase() === userMessage.trim().toLowerCase())
+      return match ? match.bot : "Je ne comprends pas votre question. Veuillez consulter les exemples de dialogue."
+    }
+    return "User not authorized."
+  }
+
+  // Auto-save conversations to localStorage whenever they change
+  useEffect(() => {
+    if (user && Object.keys(conversations).length > 0) {
+      const storageKey = `conversations_${user.email.replace('@', '_').replace('.', '_')}`
+      localStorage.setItem(storageKey, JSON.stringify(conversations))
+    }
+  }, [conversations, user])
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user")
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser)
+        setUser(parsed)
+
+        // Load conversations from localStorage for this user
+        const storageKey = `conversations_${parsed.email.replace('@', '_').replace('.', '_')}`
+        const savedConversations = localStorage.getItem(storageKey)
+        if (savedConversations) {
+          setConversations(JSON.parse(savedConversations))
+        } else {
+          setConversations({})
+        }
+        setCurrentConversation(null)
+      } catch (e) {
+        localStorage.removeItem("user")
+      }
+    }
+    setLoading(false)
+  }, [])
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData)
+    localStorage.setItem("user", JSON.stringify(userData))
+
+    // Load conversations for this user
+    const storageKey = `conversations_${userData.email.replace('@', '_').replace('.', '_')}`
+    const savedConversations = localStorage.getItem(storageKey)
+    if (savedConversations) {
+      setConversations(JSON.parse(savedConversations))
+    } else {
+      setConversations({})
+    }
+    setCurrentConversation(null)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("user")
+    setUser(null)
+    setConversations({})
+    setCurrentConversation(null)
+  }
+
+  const createNewConversation = () => {
+    if (!user) return
+    const newId = Date.now().toString()
+    setConversations(prev => ({
+      ...prev,
+      [newId]: {
+        title: "New conversation",
+        messages: []
+      }
+    }))
+    setCurrentConversation(newId)
+    if (window.innerWidth < 768) setSidebarOpen(false)
   }
 
   const switchConversation = (conversationId) => {
@@ -193,111 +167,44 @@ function App() {
     if (window.innerWidth < 768) setSidebarOpen(false)
   }
 
-  const createNewConversation = async () => {
-    if (!user) return
-
-    try {
-      const { data, error } = await supabase
-        .from("conversations")
-        .insert([
-          {
-            user_id: user.id,
-            title: "New conversation",
-          },
-        ])
-        .select()
-        .single()
-
-      if (error) throw error
-
-      const newId = data.id
-      setConversations((prev) => ({
-        ...prev,
-        [newId]: {
-          title: "New conversation",
-          messages: [],
-        },
-      }))
-      setCurrentConversation(newId)
-      if (window.innerWidth < 768) setSidebarOpen(false)
-    } catch (error) {
-      console.error("Error creating conversation:", error)
+  const deleteConversation = (conversationId) => {
+    setConversations(prev => {
+      const updated = { ...prev }
+      delete updated[conversationId]
+      return updated
+    })
+    if (currentConversation === conversationId) {
+      setCurrentConversation(null)
     }
   }
 
-  const deleteConversation = async (conversationId) => {
-    if (!user) return
-
-    try {
-      const { error } = await supabase.from("conversations").delete().eq("id", conversationId).eq("user_id", user.id)
-
-      if (error) throw error
-
-      const updatedConvos = { ...conversations }
-      delete updatedConvos[conversationId]
-      setConversations(updatedConvos)
-      if (currentConversation === conversationId) {
-        localStorage.removeItem("currentConversation")
-        setCurrentConversation(null)
-      }
-    } catch (error) {
-      console.error("Error deleting conversation:", error)
-    }
-  }
-
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (!message.trim() && !selectedImage) return
     if (!currentConversation || !user) {
       alert("No conversation selected. Please create a new conversation first.")
       return
     }
 
-    const updatedConvos = { ...conversations }
-
+    const currentMessages = conversations[currentConversation]?.messages || []
     const userMessage = {
       role: "user",
-      content: message || "",
-      ...(selectedImage && { image: URL.createObjectURL(selectedImage) }),
+      content: message,
+      ...(selectedImage && { image: URL.createObjectURL(selectedImage) })
     }
 
-    updatedConvos[currentConversation].messages.push(userMessage)
-
-    try {
-      let imageUrl = null
-      if (selectedImage) {
-        const fileExt = selectedImage.name.split(".").pop()
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("chat-images")
-          .upload(fileName, selectedImage)
-
-        if (uploadError) throw uploadError
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("chat-images").getPublicUrl(fileName)
-
-        imageUrl = publicUrl
+    const updatedMessages = [...currentMessages, userMessage]
+    const updatedConversations = {
+      ...conversations,
+      [currentConversation]: {
+        ...conversations[currentConversation],
+        messages: updatedMessages
       }
-
-      const { error: messageError } = await supabase.from("messages").insert([
-        {
-          conversation_id: currentConversation,
-          content: message || "",
-          sender: "user",
-          image_url: imageUrl,
-        },
-      ])
-
-      if (messageError) throw messageError
-    } catch (error) {
-      console.error("Error saving message:", error)
     }
 
+    setConversations(updatedConversations)
     setMessage("")
     setThinking(true)
-    setConversations(updatedConvos)
+    setEditingMessage(null)
 
     if (selectedImage) {
       setSelectedImage(null)
@@ -305,101 +212,62 @@ function App() {
       if (fileInput) fileInput.value = ""
     }
 
-    try {
-      let response
-      let isImage = false
-
-      if (selectedImage) {
-        isImage = true
-        const formData = new FormData()
-        formData.append("image", selectedImage)
-        if (message.trim()) formData.append("prompt", message)
-        formData.append("conversationId", String(currentConversation))
-
-        response = await axios.post("http://127.0.0.1:5000/api/chat-with-image", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-      } else {
-        response = await axios.post("http://127.0.0.1:5000/api/chat", {
-          conversationId: currentConversation,
-          messages: updatedConvos[currentConversation].messages,
-        })
-      }
-
-      const newMessages = [...updatedConvos[currentConversation].messages]
-      const assistantMessage = {
+    // Simulate delay
+    setTimeout(() => {
+      const botReply = getBotReply(user.email, message)
+      const finalMessages = [...updatedMessages, {
         role: "assistant",
-        content: response.data.content || "⚠️ Empty response from model.",
-      }
+        content: botReply
+      }]
 
-      newMessages.push(assistantMessage)
-      updatedConvos[currentConversation] = {
-        ...updatedConvos[currentConversation],
-        messages: newMessages,
-      }
+      // Inside the setTimeout, after bot reply
+      setConversations(prev => {
+        const conv = prev[currentConversation]
+        const messageCount = conv?.messages?.length || 0
 
-      try {
-        await supabase.from("messages").insert([
-          {
-            conversation_id: currentConversation,
-            content: assistantMessage.content,
-            sender: "assistant",
-          },
-        ])
-      } catch (error) {
-        console.error("Error saving assistant message:", error)
-      }
+        let newTitle = conv?.title || "New Conversation"
 
-      setConversations(updatedConvos)
+        // Set title after bot's 2nd reply (4th message total)
+        if (messageCount === 3) {
+          if (user.email === "demo@demo.com") {
+            newTitle = "LPEE Béton & Matériaux"
+          } else if (user.email === "elyaakoubimohammed@gmail.com") {
+            newTitle = "Performance Environnement"
+          }
+        }
+
+        return {
+          ...prev,
+          [currentConversation]: {
+            ...prev[currentConversation],
+            messages: finalMessages,
+            title: newTitle
+          }
+        }
+      })
       setThinking(false)
-
-      if (updatedConvos[currentConversation].messages.length >= 4) {
-        await axios.post("http://127.0.0.1:5000/api/update-title", {
-          conversationId: currentConversation,
-          messages: updatedConvos[currentConversation].messages,
-        })
-      }
-    } catch (error) {
-      console.error("Error sending message:", error)
-      let errorMessage = "Failed to get a response from the server."
-      if (error.response?.data?.error) {
-        errorMessage = error.response.data.error
-      } else if (error.response?.status === 404) {
-        errorMessage = "Server endpoint not found. Please check if the server is running."
-      } else if (error.response?.status === 500) {
-        errorMessage = "Server error. Please try again."
-      }
-      alert(errorMessage)
-      setThinking(false)
-    }
+    }, 3500)
   }
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      if (!e.shiftKey) {
-        e.preventDefault()
-        sendMessage()
-      }
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
     }
   }
 
   const copyToClipboard = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        const btn = document.activeElement
-        if (btn) {
-          btn.classList.add("copied")
-          btn.innerHTML = "✓"
-          setTimeout(() => {
-            btn.classList.remove("copied")
-            btn.innerHTML = "📋"
-          }, 1200)
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err)
-      })
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.activeElement
+      if (btn) {
+        btn.classList.add("copied")
+        btn.innerHTML = "✓"
+        setTimeout(() => {
+          btn.classList.remove("copied")
+          btn.innerHTML = "📋"
+        }, 1200)
+      }
+    }).catch(err => console.error("Failed to copy:", err))
   }
 
   const handleRightClick = (e, messageIndex) => {
@@ -410,55 +278,37 @@ function App() {
     }
   }
 
-  const handleEditSave = async () => {
+  const handleEditSave = () => {
     if (!editedMessage.trim() || thinking) return
     setThinking(true)
 
-    const updatedConvos = { ...conversations }
-    const messages = [...updatedConvos[currentConversation].messages]
-    const originalMessage = messages[editingMessage]
+    const updatedMessages = [...conversations[currentConversation].messages]
+    updatedMessages[editingMessage] = { role: "user", content: editedMessage }
+    updatedMessages.splice(editingMessage + 1)
 
-    messages[editingMessage] = {
-      role: "user",
-      content: editedMessage,
-      ...(originalMessage.image && { image: originalMessage.image }),
-    }
-
-    messages.splice(editingMessage + 1)
-
-    updatedConvos[currentConversation] = {
-      ...updatedConvos[currentConversation],
-      messages: [...messages],
-    }
-
-    setConversations(updatedConvos)
-    setEditingMessage(null)
-
-    try {
-      const res = await axios.post("http://127.0.0.1:5000/api/edit-message", {
-        conversationId: currentConversation,
-        messageIndex: editingMessage,
-        newContent: editedMessage,
-        hasImage: !!originalMessage.image,
-      })
-
-      if (res.data.error) {
-        alert("Edit failed: " + res.data.error)
-      } else {
-        const finalConvos = { ...updatedConvos }
-        finalConvos[currentConversation].messages.push({
-          role: "assistant",
-          content: res.data.content,
-        })
-        setConversations(finalConvos)
+    setConversations(prev => ({
+      ...prev,
+      [currentConversation]: {
+        ...prev[currentConversation],
+        messages: updatedMessages
       }
-    } catch (err) {
-      console.error("Error editing message:", err)
-      alert("Error editing message")
-    } finally {
+    }))
+
+    // Simulate bot response
+    setTimeout(() => {
+      const botReply = getBotReply(user.email, editedMessage)
+      const finalMessages = [...updatedMessages, { role: "assistant", content: botReply }]
+      setConversations(prev => ({
+        ...prev,
+        [currentConversation]: {
+          ...prev[currentConversation],
+          messages: finalMessages
+        }
+      }))
       setThinking(false)
+      setEditingMessage(null)
       setEditedMessage("")
-    }
+    }, 800)
   }
 
   const toggleRecording = async () => {
@@ -484,17 +334,15 @@ function App() {
           formData.append("audio", blob, "voice.wav")
 
           try {
-            const res = await axios.post("http://127.0.0.1:5000/api/stt", formData, {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            })
-
-            if (res.data.text) {
-              setMessage((prev) => prev + " " + res.data.text.trim())
-            }
+            // Simulate STT response
+            const fakeResponses = [
+              "Ça va, merci. Est-ce que tu peux me dire un truc intéressant qui n'a rien à voir avec le travail ?",
+              "Quels sont les projets les plus suivis récemment ?"
+            ]
+            const randomResponse = fakeResponses[Math.floor(Math.random() * fakeResponses.length)]
+            setMessage(prev => prev + " " + randomResponse.trim())
           } catch (err) {
-            console.error("STT request failed:", err)
+            console.error("STT simulation failed:", err)
             alert("❌ Error converting speech to text")
           }
         }
@@ -513,66 +361,33 @@ function App() {
       return content || ""
     }
 
-    try {
-      const parts = content.split(/(```[\s\S]*?```|`[^`\n]+`)/g)
+    const parts = content.split(/(```[\s\S]*?```|`[^`\n]+`)/g)
 
-      return parts.map((part, index) => {
-        if (part.startsWith("```") && part.endsWith("```")) {
-          const codeContent = part.slice(3, -3)
-          const lines = codeContent.split("\n")
-          const language = lines[0].trim()
-          const code = lines.slice(1).join("\n")
+    return parts.map((part, index) => {
+      if (part.startsWith("```") && part.endsWith("```")) {
+        const codeContent = part.slice(3, -3)
+        const lines = codeContent.split("\n")
+        const language = lines[0].trim()
+        const code = lines.slice(1).join("\n")
 
-          return (
-            <div key={index} className="code-block">
-              {language && <div className="code-language">{language}</div>}
-              <pre>
-                <code>{code}</code>
-              </pre>
-              <button className="copy-code-btn" onClick={() => copyToClipboard(code)} title="Copy code">
-                📋
-              </button>
-            </div>
-          )
-        } else if (part.startsWith("`") && part.endsWith("`")) {
-          return (
-            <code key={index} className="inline-code">
-              {part.slice(1, -1)}
-            </code>
-          )
-        } else {
-          return part.split("\n").map((line, lineIndex, array) => (
-            <span key={`${index}-${lineIndex}`}>
-              {line}
-              {lineIndex < array.length - 1 && <br />}
-            </span>
-          ))
-        }
-      })
-    } catch (error) {
-      console.error("Error formatting message with code blocks:", error)
-      return content.split("\n").map((line, index, array) => (
-        <span key={index}>
-          {line}
-          {index < array.length - 1 && <br />}
-        </span>
-      ))
-    }
-  }
-
-  const handleLoginSuccess = (userData) => {
-    setUser(userData)
-  }
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut()
-      setUser(null)
-      setConversations({})
-      setCurrentConversation(null)
-    } catch (error) {
-      console.error("Error logging out:", error)
-    }
+        return (
+          <div key={index} className="code-block">
+            {language && <div className="code-language">{language}</div>}
+            <pre><code>{code}</code></pre>
+            <button className="copy-code-btn" onClick={() => copyToClipboard(code)} title="Copy code">📋</button>
+          </div>
+        )
+      } else if (part.startsWith("`") && part.endsWith("`")) {
+        return <code key={index} className="inline-code">{part.slice(1, -1)}</code>
+      } else {
+        return part.split("\n").map((line, lineIndex, array) => (
+          <span key={`${index}-${lineIndex}`}>
+            {line}
+            {lineIndex < array.length - 1 && <br />}
+          </span>
+        ))
+      }
+    })
   }
 
   if (loading) {
@@ -590,27 +405,29 @@ function App() {
     return (
       <div className="app-layout">
         <div className="auth-wrapper">
-          {showSignUp ? (
-            <div>
-              <SignUpForm onSignUpSuccess={() => setShowSignUp(false)} />
-              <div className="auth-switch">
-                Already have an account?{" "}
-                <button onClick={() => setShowSignUp(false)} className="auth-switch-btn">
-                  Sign In
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <LoginForm onLoginSuccess={handleLoginSuccess} />
-              <div className="auth-switch">
-                Don't have an account?{" "}
-                <button onClick={() => setShowSignUp(true)} className="auth-switch-btn">
-                  Sign Up
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="auth-container">
+            {showSignUp ? (
+              <>
+                <SignUpForm onSignUpSuccess={() => setShowSignUp(false)} />
+                <div className="auth-switch">
+                  Already have an account?{" "}
+                  <button onClick={() => setShowSignUp(false)} className="auth-switch-btn">
+                    Sign In
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <LoginForm onLoginSuccess={handleLoginSuccess} />
+                <div className="auth-switch">
+                  Don't have an account?{" "}
+                  <button onClick={() => setShowSignUp(true)} className="auth-switch-btn">
+                    Sign Up
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -624,15 +441,12 @@ function App() {
           <div className="user-info">
             <div className="user-avatar">{user.email.charAt(0).toUpperCase()}</div>
             <div className="user-details">
-              <div className="user-email">{user.email}</div>
-              <button onClick={handleLogout} className="logout-btn">
-                Sign Out
-              </button>
+              <div className="user-email">{user.email === "demo@demo.com" ? "Chafia" : "Elyaakoubi"}</div>
+              <button onClick={handleLogout} className="logout-btn">Sign Out</button>
             </div>
           </div>
-          <button className="new-conversation-btn" onClick={createNewConversation}>
-            + New Chat
-          </button>
+          <button className="new-conversation-btn" onClick={createNewConversation}>+ New Chat</button>
+
           <div className="conversations-list">
             {Object.keys(conversations).map((cid) => (
               <div key={cid} className="conversation-item">
@@ -654,8 +468,7 @@ function App() {
           <h2>{conversations[currentConversation]?.title || "Chat"}</h2>
         </header>
         <section className="message-area" ref={messageAreaRef}>
-          {!currentConversation ||
-          (currentConversation && conversations[currentConversation]?.messages?.length === 0) ? (
+          {!currentConversation || conversations[currentConversation]?.messages?.length === 0 ? (
             <WelcomeScreen />
           ) : (
             conversations[currentConversation].messages.map((msg, index) => (
@@ -742,9 +555,7 @@ function App() {
               <img src={URL.createObjectURL(selectedImage) || "/placeholder.svg"} alt="Preview" />
               <div className="image-preview-info">
                 <span>{selectedImage.name}</span>
-                <button onClick={clearSelectedImage} className="remove-preview-btn">
-                  ✕
-                </button>
+                <button onClick={clearSelectedImage} className="remove-preview-btn">✕</button>
               </div>
             </div>
           )}
@@ -765,31 +576,11 @@ function App() {
               title={isRecording ? "Stop recording" : "Start recording"}
             >
               {isRecording ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="6" y="6" width="12" height="12" />
                 </svg>
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 1v11" />
                   <path d="M19 11a7 7 0 0 1-14 0" />
                   <line x1="12" y1="19" x2="12" y2="23" />
@@ -801,9 +592,7 @@ function App() {
             {selectedImage ? (
               <div className="image-selected">
                 <span title={`Selected: ${selectedImage.name}`}>📷</span>
-                <button className="clear-image-btn" onClick={clearSelectedImage} title="Clear image">
-                  ✕
-                </button>
+                <button className="clear-image-btn" onClick={clearSelectedImage} title="Clear image">✕</button>
               </div>
             ) : (
               <label htmlFor="image-upload" className="image-btn" title="Upload image">
@@ -815,7 +604,11 @@ function App() {
               id="image-upload"
               accept="image/*"
               style={{ display: "none" }}
-              onChange={(e) => handleImageUpload(e)}
+              onChange={(e) => {
+                const file = e.target.files[0]
+                if (!file) return
+                setSelectedImage(file)
+              }}
             />
 
             <button className="send-btn" onClick={sendMessage}>
