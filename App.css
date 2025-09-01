@@ -932,9 +932,8 @@ body {
 }
 
 .welcome-logo {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  width: 70px;
+  height: 70px;
   border-radius: 12px;
   margin-bottom: 16px;
   position: relative;
@@ -944,13 +943,17 @@ body {
   font-size: 24px;
   font-weight: bold;
   color: white;
-  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 8px 32px rgba(5, 31, 197, 0.3);
 }
 
-.welcome-logo::after {
-  content: "L";
-  font-family: "Space Grotesk", sans-serif;
+.welcome-logo img {
+  width: 100%;
+  margin-top: 20px;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
 }
+
 
 .welcome-title {
   font-family: "Space Grotesk", sans-serif;

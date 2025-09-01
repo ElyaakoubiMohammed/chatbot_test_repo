@@ -31,7 +31,7 @@ export default function SignUpForm({ onSignUpSuccess }) {
         return
       }
 
-      if (!email.endsWith("@company.com") && email !== "chafiaaabida@gmail.com") {
+      if (!email.endsWith("@gmail.com") && email !== "chafiaaabida@gmail.com") {
         setError("Registration limited to company emails (except chafiaaabida@gmail.com)")
         return
       }

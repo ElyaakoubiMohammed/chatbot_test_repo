@@ -61,7 +61,7 @@ SCRIPT_USER1 = [
         "bot": "Bien sûr ! Saviez-vous que le béton utilisé aujourd’hui peut être conçu pour absorber le dioxyde de carbone de l’air et réduire l’empreinte carbone des bâtiments ? C’est un exemple d’innovation durable dans la construction."
     },
     {
-        "user": "Ah oui, c’est impressionnant. Et sinon, peux-tu me donner un aperçu des activités récentes du LPEE dans le béton et matériaux ?",
+        "user": "Peux tu me donner un aperçu des activités récentes du LPEE dans le béton et matériaux ?",
         "bot": "Bien sûr. Depuis janvier 2025, le LPEE a analysé et validé plus de 1 000 échantillons de béton sur différents chantiers au Maroc. Les contrôles portaient sur la résistance mécanique, la durabilité et la conformité aux normes NM 10.1.004 et NM 10.2.008. On observe également une hausse des demandes liées aux matériaux recyclés et aux solutions de construction durable."
     },
     {
@@ -77,20 +77,33 @@ SCRIPT_USER1 = [
         "bot": "Les tests les plus demandés sont :\n\nRésistance à la compression du béton\n\nAnalyses granulométriques des matériaux\n\nEssais de durabilité et vieillissement\n\nContrôle de qualité des enrobés bitumineux\nCes quatre catégories représentent environ 75 % des demandes globales."
     },
     {
-        "user": "Tiens, petite question : est-ce que les IA comme toi peuvent apprendre de nouvelles choses par elles-mêmes ?",
+        "user": "Est-ce que les IA comme toi peuvent apprendre de nouvelles choses par elles-mêmes ?",
         "bot": "Je peux traiter et analyser les données qui me sont fournies, mais je n’apprends pas de façon autonome comme un humain. Je fonctionne en utilisant les informations et les modèles qui m’ont été programmés."
     }
 ]
 
 SCRIPT_USER2 = [
+    { 
+        "user": "Bonjour", 
+        "bot": "Bonjour, je suis à votre disposition pour vous assister. Comment puis-je vous aider aujourd’hui ?" 
+    },
     {
-        "user": "Peux-tu me donner un aperçu rapide des anomalies ou non-conformités récentes ?",
+        "user": "Peux tu me donner un aperçu rapide des anomalies ou non-conformités récentes ?",
         "bot": "Oui, environ 4 % des échantillons ont présenté des écarts : certains bétons légèrement en dessous de la résistance attendue et quelques granulats non conformes aux spécifications. Pour chaque cas, le LPEE a fourni des recommandations détaillées pour corriger les anomalies."
     },
     {
-        "user": "Que penses-tu de la performance du secteur environnement ?",
+        "user": "Que penses tu de la performance du secteur environnement ?",
         "bot": "Le secteur environnement affiche une performance remarquable avec une croissance de +15.3%, la plus élevée de tous les secteurs d'activité du LPEE. Cette forte progression s'explique probablement par plusieurs facteurs :\nPremièrement, le renforcement du cadre réglementaire environnemental au Maroc pousse les entreprises et collectivités à multiplier les études d'impact et contrôles de conformité.\nDeuxièmement, la sensibilisation croissante aux enjeux écologiques génère une demande accrue d'analyses de qualité de l'air, de l'eau et des sols.\nAvec 552 analyses réalisées (17% du volume total) et un délai moyen de 10.8 jours, ce secteur trouve un équilibre intéressant entre volume d'activité et efficacité opérationnelle. Le délai reste raisonnable comparé à la géotechnique (14.5 jours) ou aux structures (18.3 jours), tout en étant plus long que les matériaux de construction (7.2 jours), ce qui reflète la complexité technique des analyses environnementales.\nCette dynamique positionne l'environnement comme un secteur d'avenir pour le LPEE, avec un potentiel de croissance soutenu dans les années à venir, notamment avec les grands projets d'infrastructure verte du royaume."
+    },
+    {
+        "user": "Can you tell me about the geotechnical studies conducted this year?",
+        "bot": "Yes. In 2025, LPEE performed over 3,000 soil and foundation studies for various infrastructure projects. Common issues detected were low soil compaction in coastal regions and clay layers requiring stabilization. For each case, engineers provided specific recommendations to ensure safe construction and structural stability."
+    },
+    {
+        "user": "Merci",
+        "bot": "Avec plaisir ! N’hésitez pas à revenir vers moi si vous avez d’autres questions."
     }
+
 ]
 
 def get_bot_reply(user_email, user_message):
