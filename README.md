@@ -1,30 +1,97 @@
-# Design feedback needed
+# 🤖 AI Conversational Assistant — LLM-Powered Chatbot
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+A prototype of an intelligent conversational agent built with **Next.js**, **Python**, and **Ollama**. This project served as the foundation for a production chatbot deployed at LPEE (Laboratoire Public d'Essais et d'Études), integrated with SharePoint for internal document querying.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/ggggs-projects-32f2c066/v0-design-feedback-needed)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/IjuosiSxgia)
+---
 
-## Overview
+## ✨ Features
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+- 💬 **Conversational AI** — Natural language interaction powered by a local LLM via Ollama
+- 🔐 **JWT Authentication** — Secure user authentication and role-based access control
+- 💾 **Conversation Persistence** — Full conversation history saved and retrievable per user
+- 📄 **Multi-file Document Search** — Query across multiple internal documents in natural language
+- 🖼️ **Image Analysis** — LLM-powered image understanding capabilities
+- 🔗 **REST API Backend** — Secure Python API handling all AI interactions
 
-## Deployment
+---
 
-Your project is live at:
+## 🛠️ Tech Stack
 
-**[https://vercel.com/ggggs-projects-32f2c066/v0-design-feedback-needed](https://vercel.com/ggggs-projects-32f2c066/v0-design-feedback-needed)**
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js, TypeScript, React |
+| Backend | Python, Flask |
+| AI / LLM | Ollama (local LLM inference) |
+| Auth | JWT (JSON Web Tokens) |
+| Styling | Tailwind CSS, shadcn/ui |
 
-## Build your app
+---
 
-Continue building your app on:
+## 📁 Project Structure
 
-**[https://v0.app/chat/projects/IjuosiSxgia](https://v0.app/chat/projects/IjuosiSxgia)**
+```
+chatbot/
+├── app/                  # Next.js app router pages
+├── components/           # Reusable UI components
+├── lib/                  # Utility functions
+├── public/               # Static assets
+├── styles/               # Global styles
+├── app.py                # Python Flask backend
+├── requirements.txt      # Python dependencies
+└── next.config.mjs       # Next.js configuration
+```
 
-## How It Works
+---
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.10+
+- [Ollama](https://ollama.ai/) installed and running locally
+- pnpm
+
+### Backend Setup
+
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Start the Python backend
+python app.py
+```
+
+### Frontend Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start the development server
+pnpm dev
+```
+
+Then open your browser at `http://localhost:3000`
+
+---
+
+## 🧠 How It Works
+
+1. User sends a message through the chat interface
+2. The Next.js frontend sends the request to the Python REST API
+3. The API authenticates the user via JWT and checks role permissions
+4. The request is forwarded to the local LLM (via Ollama) for processing
+5. The LLM response is returned, and the conversation is persisted
+6. The response is displayed in the chat interface
+
+---
+
+## 👨‍💻 Author
+
+**Mohammed Elyaakoubi**  
+---
+
+## 📄 License
+
+This project is a prototype developed for research and educational purposes.
